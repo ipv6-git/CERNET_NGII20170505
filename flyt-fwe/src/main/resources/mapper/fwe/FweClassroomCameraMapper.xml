@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweClassroomCameraMapper">
+    
+    <resultMap type="FweClassroomCamera" id="FweClassroomCameraResult">
+        <result property="id"    column="id"    />
+        <result property="classroomId"    column="classroom_id"    />
+        <result property="cameraId"    column="camera_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweClassroomCameraVo">
+        select id, classroom_id, camera_id, create_by, create_time, update_by, update_time from fwe_classroom_camera
+    </sql>
+	
+    <select id="selectFweClassroomCameraList" parameterType="FweClassroomCamera" resultMap="FweClassroomCameraResult">
+        <include refid="selectFweClassroomCameraVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="classroomId != null "> and classroom_id = #{classroomId}</if>
+            <if test="cameraId != null "> and camera_id = #{cameraId}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+         </where>
+    </select>
+    
+    <select id="selectFweClassroomCameraById" parameterType="Long" resultMap="FweClassroomCameraResult">
+        <include refid="selectFweClassroomCameraVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweClassroomCamera" parameterType="FweClassroomCamera" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_classroom_camera
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="classroomId != null  ">classroom_id,</if>
+			<if test="cameraId != null  ">camera_id,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="classroomId != null  ">#{classroomId},</if>
+			<if test="cameraId != null  ">#{cameraId},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweClassroomCamera" parameterType="FweClassroomCamera">
+        update fwe_classroom_camera
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="classroomId != null  ">classroom_id = #{classroomId},</if>
+            <if test="cameraId != null  ">camera_id = #{cameraId},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweClassroomCameraById" parameterType="Long">
+        delete from fwe_classroom_camera where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweClassroomCameraByIds" parameterType="String">
+        delete from fwe_classroom_camera where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

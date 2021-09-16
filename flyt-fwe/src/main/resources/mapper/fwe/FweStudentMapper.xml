@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweStudentMapper">
+    
+    <resultMap type="FweStudent" id="FweStudentResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="studentNo"    column="student_no"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="majorId"    column="major_id"    />
+        <result property="classId"    column="class_id"    />
+        <result property="picture"    column="picture"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweStudentVo">
+        select id, name, student_no, college_id, major_id, class_id, picture, create_by, create_time, update_by, update_time from fwe_student
+    </sql>
+	
+    <select id="selectFweStudentList" parameterType="FweStudent" resultMap="FweStudentResult">
+        <include refid="selectFweStudentVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="studentNo != null  and studentNo != '' "> and student_no = #{studentNo}</if>
+             <if test="collegeId != null "> and college_id = #{collegeId}</if>
+             <if test="majorId != null "> and major_id = #{majorId}</if>
+             <if test="classId != null "> and class_id = #{classId}</if>
+             <if test="picture != null  and picture != '' "> and picture = #{picture}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweStudentById" parameterType="Long" resultMap="FweStudentResult">
+        <include refid="selectFweStudentVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweStudent" parameterType="FweStudent" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_student
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="studentNo != null  and studentNo != ''  ">student_no,</if>
+			<if test="collegeId != null  ">college_id,</if>
+			<if test="majorId != null  ">major_id,</if>
+			<if test="classId != null  ">class_id,</if>
+			<if test="picture != null  and picture != ''  ">picture,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="studentNo != null  and studentNo != ''  ">#{studentNo},</if>
+			<if test="collegeId != null  ">#{collegeId},</if>
+			<if test="majorId != null  ">#{majorId},</if>
+			<if test="classId != null  ">#{classId},</if>
+			<if test="picture != null  and picture != ''  ">#{picture},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweStudent" parameterType="FweStudent">
+        update fwe_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="studentNo != null  and studentNo != ''  ">student_no = #{studentNo},</if>
+            <if test="collegeId != null  ">college_id = #{collegeId},</if>
+            <if test="majorId != null  ">major_id = #{majorId},</if>
+            <if test="classId != null  ">class_id = #{classId},</if>
+            <if test="picture != null  and picture != ''  ">picture = #{picture},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweStudentById" parameterType="Long">
+        delete from fwe_student where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweStudentByIds" parameterType="String">
+        delete from fwe_student where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

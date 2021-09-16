@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweTeachingBuildingFloorMapper">
+    
+    <resultMap type="FweTeachingBuildingFloor" id="FweTeachingBuildingFloorResult">
+        <result property="id"    column="id"    />
+        <result property="floorName"    column="floor_name"    />
+        <result property="floorNo"    column="floor_no"    />
+        <result property="campusId"    column="campus_id"    />
+        <result property="teachingBuildingId"    column="teaching_building_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweTeachingBuildingFloorVo">
+        select id, floor_name, floor_no, campus_id, teaching_building_id, create_by, create_time, update_by, update_time from fwe_teaching_building_floor
+    </sql>
+	
+    <select id="selectFweTeachingBuildingFloorList" parameterType="FweTeachingBuildingFloor" resultMap="FweTeachingBuildingFloorResult">
+        <include refid="selectFweTeachingBuildingFloorVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="floorName != null  and floorName != '' "> and floor_name = #{floorName}</if>
+             <if test="floorNo != null  and floorNo != '' "> and floor_no = #{floorNo}</if>
+             <if test="campusId != null "> and campus_id = #{campusId}</if>
+             <if test="teachingBuildingId != null "> and teaching_building_id = #{teachingBuildingId}</if>
+             <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+             <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                 and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+             </if>
+             <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                 and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+             </if>
+             <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweTeachingBuildingFloorById" parameterType="Long" resultMap="FweTeachingBuildingFloorResult">
+        <include refid="selectFweTeachingBuildingFloorVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweTeachingBuildingFloor" parameterType="FweTeachingBuildingFloor" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_teaching_building_floor
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="floorName != null  and floorName != ''  ">floor_name,</if>
+			<if test="floorNo != null  and floorNo != ''  ">floor_no,</if>
+			<if test="campusId != null  ">campus_id,</if>
+			<if test="teachingBuildingId != null  ">teaching_building_id,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="floorName != null  and floorName != ''  ">#{floorName},</if>
+			<if test="floorNo != null  and floorNo != ''  ">#{floorNo},</if>
+			<if test="campusId != null  ">#{campusId},</if>
+			<if test="teachingBuildingId != null  ">#{teachingBuildingId},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweTeachingBuildingFloor" parameterType="FweTeachingBuildingFloor">
+        update fwe_teaching_building_floor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="floorName != null  and floorName != ''  ">floor_name = #{floorName},</if>
+            <if test="floorNo != null  and floorNo != ''  ">floor_no = #{floorNo},</if>
+            <if test="campusId != null  ">campus_id = #{campusId},</if>
+            <if test="teachingBuildingId != null  ">teaching_building_id = #{teachingBuildingId},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweTeachingBuildingFloorById" parameterType="Long">
+        delete from fwe_teaching_building_floor where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweTeachingBuildingFloorByIds" parameterType="String">
+        delete from fwe_teaching_building_floor where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweCurriculumMapper">
+    
+    <resultMap type="FweCurriculum" id="FweCurriculumResult">
+        <result property="id"    column="id"    />
+        <result property="curriculumNo"    column="curriculum_no"    />
+        <result property="curriculumName"    column="curriculum_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectFweCurriculumVo">
+        select id, curriculum_no, curriculum_name, create_by, create_time, update_by, update_time, remark from fwe_curriculum
+    </sql>
+	
+    <select id="selectFweCurriculumList" parameterType="FweCurriculum" resultMap="FweCurriculumResult">
+        <include refid="selectFweCurriculumVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="curriculumNo != null  and curriculumNo != '' "> and curriculum_no = #{curriculumNo}</if>
+             <if test="curriculumName != null  and curriculumName != '' "> and curriculum_name = #{curriculumName}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+         </where>
+    </select>
+    
+    <select id="selectFweCurriculumById" parameterType="Long" resultMap="FweCurriculumResult">
+        <include refid="selectFweCurriculumVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweCurriculum" parameterType="FweCurriculum" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_curriculum
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="curriculumNo != null  and curriculumNo != ''  ">curriculum_no,</if>
+			<if test="curriculumName != null  and curriculumName != ''  ">curriculum_name,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="curriculumNo != null  and curriculumNo != ''  ">#{curriculumNo},</if>
+			<if test="curriculumName != null  and curriculumName != ''  ">#{curriculumName},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateFweCurriculum" parameterType="FweCurriculum">
+        update fwe_curriculum
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="curriculumNo != null  and curriculumNo != ''  ">curriculum_no = #{curriculumNo},</if>
+            <if test="curriculumName != null  and curriculumName != ''  ">curriculum_name = #{curriculumName},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweCurriculumById" parameterType="Long">
+        delete from fwe_curriculum where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweCurriculumByIds" parameterType="String">
+        delete from fwe_curriculum where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

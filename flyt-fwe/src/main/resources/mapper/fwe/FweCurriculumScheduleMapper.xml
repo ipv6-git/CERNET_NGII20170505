@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweCurriculumScheduleMapper">
+    
+    <resultMap type="FweCurriculumSchedule" id="FweCurriculumScheduleResult">
+        <result property="id"    column="id"    />
+        <result property="curriculumId"    column="curriculum_id"    />
+        <result property="classDate"    column="class_date"    />
+        <result property="classStartTime"    column="class_start_time"    />
+        <result property="classEndTime"    column="class_end_time"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="campusId"    column="campus_id"    />
+        <result property="teachingBuildingId"    column="teaching_building_id"    />
+        <result property="floorId"    column="floor_id"    />
+        <result property="classroomId"    column="classroom_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectFweCurriculumScheduleVo">
+        select id, curriculum_id, class_date, class_start_time, class_end_time, teacher_id, campus_id, teaching_building_id, floor_id, classroom_id, create_by, create_time, update_by, update_time, remark from fwe_curriculum_schedule
+    </sql>
+	
+    <select id="selectFweCurriculumScheduleList" parameterType="FweCurriculumSchedule" resultMap="FweCurriculumScheduleResult">
+        <include refid="selectFweCurriculumScheduleVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="curriculumId != null "> and curriculum_id = #{curriculumId}</if>
+             <if test="classDate != null "> and class_date = #{classDate}</if>
+             <if test="classStartTime != null "> and class_start_time = #{classStartTime}</if>
+             <if test="classEndTime != null "> and class_end_time = #{classEndTime}</if>
+             <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
+             <if test="campusId != null "> and campus_id = #{campusId}</if>
+             <if test="teachingBuildingId != null "> and teaching_building_id = #{teachingBuildingId}</if>
+             <if test="floorId != null "> and floor_id = #{floorId}</if>
+             <if test="classroomId != null "> and classroom_id = #{classroomId}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+         </where>
+    </select>
+    
+    <select id="selectFweCurriculumScheduleById" parameterType="Long" resultMap="FweCurriculumScheduleResult">
+        <include refid="selectFweCurriculumScheduleVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweCurriculumSchedule" parameterType="FweCurriculumSchedule" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_curriculum_schedule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="curriculumId != null  ">curriculum_id,</if>
+			<if test="classDate != null  ">class_date,</if>
+			<if test="classStartTime != null  ">class_start_time,</if>
+			<if test="classEndTime != null  ">class_end_time,</if>
+			<if test="teacherId != null  ">teacher_id,</if>
+			<if test="campusId != null  ">campus_id,</if>
+			<if test="teachingBuildingId != null  ">teaching_building_id,</if>
+			<if test="floorId != null  ">floor_id,</if>
+			<if test="classroomId != null  ">classroom_id,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="curriculumId != null  ">#{curriculumId},</if>
+			<if test="classDate != null  ">#{classDate},</if>
+			<if test="classStartTime != null  ">#{classStartTime},</if>
+			<if test="classEndTime != null  ">#{classEndTime},</if>
+			<if test="teacherId != null  ">#{teacherId},</if>
+			<if test="campusId != null  ">#{campusId},</if>
+			<if test="teachingBuildingId != null  ">#{teachingBuildingId},</if>
+			<if test="floorId != null  ">#{floorId},</if>
+			<if test="classroomId != null  ">#{classroomId},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateFweCurriculumSchedule" parameterType="FweCurriculumSchedule">
+        update fwe_curriculum_schedule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="curriculumId != null  ">curriculum_id = #{curriculumId},</if>
+            <if test="classDate != null  ">class_date = #{classDate},</if>
+            <if test="classStartTime != null  ">class_start_time = #{classStartTime},</if>
+            <if test="classEndTime != null  ">class_end_time = #{classEndTime},</if>
+            <if test="teacherId != null  ">teacher_id = #{teacherId},</if>
+            <if test="campusId != null  ">campus_id = #{campusId},</if>
+            <if test="teachingBuildingId != null  ">teaching_building_id = #{teachingBuildingId},</if>
+            <if test="floorId != null  ">floor_id = #{floorId},</if>
+            <if test="classroomId != null  ">classroom_id = #{classroomId},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweCurriculumScheduleById" parameterType="Long">
+        delete from fwe_curriculum_schedule where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweCurriculumScheduleByIds" parameterType="String">
+        delete from fwe_curriculum_schedule where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

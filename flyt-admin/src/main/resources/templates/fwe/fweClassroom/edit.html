@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修改教室')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-fweClassroom-edit" th:object="${fweClassroom}">
+            <input id="id" name="id" th:field="*{id}"  type="hidden">
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">教室名称：</label>
+				<div class="col-sm-8">
+					<input id="classroomName" name="classroomName" th:field="*{classroomName}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">教室编号：</label>
+				<div class="col-sm-8">
+					<input id="classroomNo" name="classroomNo" th:field="*{classroomNo}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">所属校区：</label>
+				<div class="col-sm-8">
+					<input id="campusId" name="campusId" th:field="*{campusId}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">所属教学楼：</label>
+				<div class="col-sm-8">
+					<input id="teachingBuildingId" name="teachingBuildingId" th:field="*{teachingBuildingId}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">所属楼层：</label>
+				<div class="col-sm-8">
+					<input id="floorId" name="floorId" th:field="*{floorId}" class="form-control" type="text">
+				</div>
+			</div>
+
+		</form>
+    </div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "fwe/fweClassroom";
+		$("#form-fweClassroom-edit").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			},
+			focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	            $.operate.save(prefix + "/edit", $('#form-fweClassroom-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

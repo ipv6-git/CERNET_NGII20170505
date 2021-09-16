@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweCameraMapper">
+    
+    <resultMap type="FweCamera" id="FweCameraResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="cameraUniqueId"    column="camera_unique_id"    />
+        <result property="name"    column="name"    />
+        <result property="model"    column="model"    />
+        <result property="ip"    column="ip"    />
+        <result property="port"    column="port"    />
+        <result property="acountName"    column="acount_name"    />
+        <result property="passwd"    column="passwd"    />
+        <result property="uri"    column="uri"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectFweCameraVo">
+        select id, type, camera_unique_id, name, model, ip, port, acount_name, passwd, uri, create_by, create_time, update_by, update_time, remark from fwe_camera
+    </sql>
+	
+    <select id="selectFweCameraList" parameterType="FweCamera" resultMap="FweCameraResult">
+        <include refid="selectFweCameraVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="cameraUniqueId != null  and cameraUniqueId != '' "> and camera_unique_id = #{cameraUniqueId}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="model != null  and model != '' "> and model = #{model}</if>
+             <if test="ip != null  and ip != '' "> and ip = #{ip}</if>
+             <if test="port != null  and port != '' "> and port = #{port}</if>
+             <if test="acountName != null  and acountName != '' "> and acount_name = #{acountName}</if>
+             <if test="passwd != null  and passwd != '' "> and passwd = #{passwd}</if>
+             <if test="uri != null  and uri != '' "> and uri = #{uri}</if>
+             <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweCameraById" parameterType="Long" resultMap="FweCameraResult">
+        <include refid="selectFweCameraVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweCamera" parameterType="FweCamera" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_camera
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="cameraUniqueId != null  and cameraUniqueId != ''  ">camera_unique_id,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="model != null  and model != ''  ">model,</if>
+			<if test="ip != null  and ip != ''  ">ip,</if>
+			<if test="port != null  and port != ''  ">port,</if>
+			<if test="acountName != null  and acountName != ''  ">acount_name,</if>
+			<if test="passwd != null  and passwd != ''  ">passwd,</if>
+			<if test="uri != null  and uri != ''  ">uri,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+			create_time,
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+			update_time,
+			<if test="remark != null  and remark != ''  ">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="cameraUniqueId != null  and cameraUniqueId != ''  ">#{cameraUniqueId},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="model != null  and model != ''  ">#{model},</if>
+			<if test="ip != null  and ip != ''  ">#{ip},</if>
+			<if test="port != null  and port != ''  ">#{port},</if>
+			<if test="acountName != null  and acountName != ''  ">#{acountName},</if>
+			<if test="passwd != null  and passwd != ''  ">#{passwd},</if>
+			<if test="uri != null  and uri != ''  ">#{uri},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateFweCamera" parameterType="FweCamera">
+        update fwe_camera
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="cameraUniqueId != null  and cameraUniqueId != ''  ">camera_unique_id = #{cameraUniqueId},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="model != null  and model != ''  ">model = #{model},</if>
+            <if test="ip != null  and ip != ''  ">ip = #{ip},</if>
+            <if test="port != null  and port != ''  ">port = #{port},</if>
+            <if test="acountName != null  and acountName != ''  ">acount_name = #{acountName},</if>
+            <if test="passwd != null  and passwd != ''  ">passwd = #{passwd},</if>
+            <if test="uri != null  and uri != ''  ">uri = #{uri},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweCameraById" parameterType="Long">
+        delete from fwe_camera where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweCameraByIds" parameterType="String">
+        delete from fwe_camera where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

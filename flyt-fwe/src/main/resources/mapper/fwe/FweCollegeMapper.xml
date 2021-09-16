@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweCollegeMapper">
+    
+    <resultMap type="FweCollege" id="FweCollegeResult">
+        <result property="id"    column="id"    />
+        <result property="collegeName"    column="college_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweCollegeVo">
+        select id, college_name, create_by, create_time, update_by, update_time from fwe_college
+    </sql>
+	
+    <select id="selectFweCollegeList" parameterType="FweCollege" resultMap="FweCollegeResult">
+        <include refid="selectFweCollegeVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="collegeName != null  and collegeName != '' "> and college_name = #{collegeName}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweCollegeById" parameterType="Long" resultMap="FweCollegeResult">
+        <include refid="selectFweCollegeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweCollege" parameterType="FweCollege" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_college
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="collegeName != null  and collegeName != ''  ">college_name,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="collegeName != null  and collegeName != ''  ">#{collegeName},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweCollege" parameterType="FweCollege">
+        update fwe_college
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collegeName != null  and collegeName != ''  ">college_name = #{collegeName},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweCollegeById" parameterType="Long">
+        delete from fwe_college where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweCollegeByIds" parameterType="String">
+        delete from fwe_college where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

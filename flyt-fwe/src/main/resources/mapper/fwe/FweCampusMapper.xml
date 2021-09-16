@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweCampusMapper">
+    
+    <resultMap type="FweCampus" id="FweCampusResult">
+        <result property="id"    column="id"    />
+        <result property="campusName"    column="campus_name"    />
+        <result property="campusNo"    column="campus_no"    />
+        <result property="campusNickname"    column="campus_nickname"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="district"    column="district"    />
+        <result property="address"    column="address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweCampusVo">
+        select id, campus_name, campus_no, campus_nickname, province, city, district, address, create_by, create_time, update_by, update_time from fwe_campus
+    </sql>
+	
+    <select id="selectFweCampusList" parameterType="FweCampus" resultMap="FweCampusResult">
+        <include refid="selectFweCampusVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="campusName != null  and campusName != '' "> and campus_name = #{campusName}</if>
+            <if test="campusNo != null  and campusNo != '' "> and campus_no = #{campusNo}</if>
+            <if test="campusNickname != null  and campusNickname != '' "> and campus_nickname = #{campusNickname}</if>
+            <if test="province != null  and province != '' "> and province = #{province}</if>
+            <if test="city != null  and city != '' "> and city = #{city}</if>
+            <if test="district != null  and district != '' "> and district = #{district}</if>
+            <if test="address != null  and address != '' "> and address = #{address}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweCampusById" parameterType="Long" resultMap="FweCampusResult">
+        <include refid="selectFweCampusVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweCampus" parameterType="FweCampus" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_campus
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="campusName != null  and campusName != ''  ">campus_name,</if>
+			<if test="campusNo != null  and campusNo != ''  ">campus_no,</if>
+			<if test="campusNickname != null  and campusNickname != ''  ">campus_nickname,</if>
+			<if test="province != null  and province != ''  ">province,</if>
+			<if test="city != null  and city != ''  ">city,</if>
+			<if test="district != null  and district != ''  ">district,</if>
+			<if test="address != null  and address != ''  ">address,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+			<if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="campusName != null  and campusName != ''  ">#{campusName},</if>
+			<if test="campusNo != null  and campusNo != ''  ">#{campusNo},</if>
+			<if test="campusNickname != null  and campusNickname != ''  ">#{campusNickname},</if>
+			<if test="province != null  and province != ''  ">#{province},</if>
+			<if test="city != null  and city != ''  ">#{city},</if>
+			<if test="district != null  and district != ''  ">#{district},</if>
+			<if test="address != null  and address != ''  ">#{address},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+			<if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweCampus" parameterType="FweCampus">
+        update fwe_campus
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="campusName != null  and campusName != ''  ">campus_name = #{campusName},</if>
+            <if test="campusNo != null  and campusNo != ''  ">campus_no = #{campusNo},</if>
+            <if test="campusNickname != null  and campusNickname != ''  ">campus_nickname = #{campusNickname},</if>
+            <if test="province != null  and province != ''  ">province = #{province},</if>
+            <if test="city != null  and city != ''  ">city = #{city},</if>
+            <if test="district != null  and district != ''  ">district = #{district},</if>
+            <if test="address != null  and address != ''  ">address = #{address},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweCampusById" parameterType="Long">
+        delete from fwe_campus where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweCampusByIds" parameterType="String">
+        delete from fwe_campus where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

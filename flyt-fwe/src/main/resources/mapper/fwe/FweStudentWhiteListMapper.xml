@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweStudentWhiteListMapper">
+    
+    <resultMap type="FweStudentWhiteList" id="FweStudentWhiteListResult">
+        <result property="id"    column="id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="type"    column="type"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweStudentWhiteListVo">
+        select id, student_id, type, start_time, end_time, create_by, create_time, update_by, update_time from fwe_student_white_list
+    </sql>
+	
+    <select id="selectFweStudentWhiteListList" parameterType="FweStudentWhiteList" resultMap="FweStudentWhiteListResult">
+        <include refid="selectFweStudentWhiteListVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="studentId != null "> and student_id = #{studentId}</if>
+             <if test="type != null  and type != '' "> and type = #{type}</if>
+             <if test="startTime != null "> and start_time = #{startTime}</if>
+             <if test="endTime != null "> and end_time = #{endTime}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweStudentWhiteListById" parameterType="Long" resultMap="FweStudentWhiteListResult">
+        <include refid="selectFweStudentWhiteListVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweStudentWhiteList" parameterType="FweStudentWhiteList" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_student_white_list
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="studentId != null  ">student_id,</if>
+			<if test="type != null  and type != ''  ">type,</if>
+			<if test="startTime != null  ">start_time,</if>
+			<if test="endTime != null  ">end_time,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="studentId != null  ">#{studentId},</if>
+			<if test="type != null  and type != ''  ">#{type},</if>
+			<if test="startTime != null  ">#{startTime},</if>
+			<if test="endTime != null  ">#{endTime},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweStudentWhiteList" parameterType="FweStudentWhiteList">
+        update fwe_student_white_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentId != null  ">student_id = #{studentId},</if>
+            <if test="type != null  and type != ''  ">type = #{type},</if>
+            <if test="startTime != null  ">start_time = #{startTime},</if>
+            <if test="endTime != null  ">end_time = #{endTime},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweStudentWhiteListById" parameterType="Long">
+        delete from fwe_student_white_list where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweStudentWhiteListByIds" parameterType="String">
+        delete from fwe_student_white_list where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

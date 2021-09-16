@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flyt.fwe.mapper.FweClassMapper">
+    
+    <resultMap type="FweClass" id="FweClassResult">
+        <result property="id"    column="id"    />
+        <result property="className"    column="class_name"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="majorId"    column="major_id"    />
+        <result property="classYear"    column="class_year"    />
+        <result property="scholasticYearSystem"    column="scholastic_year_system"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectFweClassVo">
+        select id, class_name, college_id, major_id, class_year, scholastic_year_system, create_by, create_time, update_by, update_time from fwe_class
+    </sql>
+	
+    <select id="selectFweClassList" parameterType="FweClass" resultMap="FweClassResult">
+        <include refid="selectFweClassVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="className != null  and className != '' "> and class_name = #{className}</if>
+             <if test="collegeId != null "> and college_id = #{collegeId}</if>
+             <if test="majorId != null "> and major_id = #{majorId}</if>
+             <if test="classYear != null  and classYear != '' "> and class_year = #{classYear}</if>
+             <if test="scholasticYearSystem != null  and scholasticYearSystem != '' "> and scholastic_year_system = #{scholasticYearSystem}</if>
+            <!--<if test="createTime != null "> and create_time = #{createTime}</if>-->
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+         </where>
+    </select>
+    
+    <select id="selectFweClassById" parameterType="Long" resultMap="FweClassResult">
+        <include refid="selectFweClassVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertFweClass" parameterType="FweClass" useGeneratedKeys="true" keyProperty="id">
+        insert into fwe_class
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="className != null  and className != ''  ">class_name,</if>
+			<if test="collegeId != null  ">college_id,</if>
+			<if test="majorId != null  ">major_id,</if>
+			<if test="classYear != null  and classYear != ''  ">class_year,</if>
+			<if test="scholasticYearSystem != null  and scholasticYearSystem != ''  ">scholastic_year_system,</if>
+			<if test="createBy != null  and createBy != ''  ">create_by,</if>
+            create_time,
+            <if test="updateBy != null  and updateBy != ''  ">update_by,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="className != null  and className != ''  ">#{className},</if>
+			<if test="collegeId != null  ">#{collegeId},</if>
+			<if test="majorId != null  ">#{majorId},</if>
+			<if test="classYear != null  and classYear != ''  ">#{classYear},</if>
+			<if test="scholasticYearSystem != null  and scholasticYearSystem != ''  ">#{scholasticYearSystem},</if>
+			<if test="createBy != null  and createBy != ''  ">#{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null  and updateBy != ''  ">#{updateBy},</if>
+            sysdate(),
+         </trim>
+    </insert>
+	 
+    <update id="updateFweClass" parameterType="FweClass">
+        update fwe_class
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="className != null  and className != ''  ">class_name = #{className},</if>
+            <if test="collegeId != null  ">college_id = #{collegeId},</if>
+            <if test="majorId != null  ">major_id = #{majorId},</if>
+            <if test="classYear != null  and classYear != ''  ">class_year = #{classYear},</if>
+            <if test="scholasticYearSystem != null  and scholasticYearSystem != ''  ">scholastic_year_system = #{scholasticYearSystem},</if>
+            <if test="updateBy != null  and updateBy != ''  ">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteFweClassById" parameterType="Long">
+        delete from fwe_class where id = #{id}
+    </delete>
+	
+    <delete id="deleteFweClassByIds" parameterType="String">
+        delete from fwe_class where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
